@@ -15,25 +15,14 @@ var redirect_uri = 'http://localhost:8888/spotify/callback';
 const express = require('express');
 const router = express.Router(); // calling routes on api
 
-router.get('/login', function (req, res) {
-    var state = StringHelper.generateRandomString(16);
-    var scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
-
-    res.redirect('https://accounts.spotify.com/authorize?' +
-        querystring.stringify({
-            response_type: 'code',
-            client_id: client_id,
-            scope: scope,
-            redirect_uri: redirect_uri,
-            state: state
-        }));
-});
+// PASTE THE LOGIN FUNCTION HERE
 
 router.get('/callback', function (req, res) {
+    // The below code we get directly from the spotify api documentation
     var code = req.query.code || null;
     var state = req.query.state || null;
 
-    if (state === null) {
+    if (state === null) { // error handling, with redirect to state mismatch
         res.redirect('/#' +
             querystring.stringify({
                 error: 'state_mismatch'
@@ -52,17 +41,17 @@ router.get('/callback', function (req, res) {
             },
             json: true
         };
-
-        axios.post(authOptions.url, querystring.stringify(authOptions.form), {
+        // The code below here we created ourselves
+        axios.post(authOptions.url, querystring.stringify(authOptions.form), { // Sending the request via post to spotify url to receive the bearer token
             headers: authOptions.headers
         })
-            .then(response => {
-                const dataString = JSON.stringify(response.data, null, 2)
-
+            .then(response => { // We use the .then function to wait for a response from the above post to the spotify api
+                const dataString = JSON.stringify(response.data, null, 2) // Converting the response (including the bearer token) to JSON
                 console.log(response.data);
-                fs.writeFile('bearer.json', dataString, () => { })
+                fs.writeFile('bearer.json', dataString, () => { }) // Saving the reponse to a file
                 res.send(response.data) //ends the flow of the endpoint and prints stuff to the screen
             })
+            // error handling below
             .catch(error => {
                 console.error(error);
                 res.status(500).send('Internal Server Error'); // Send error response to client
@@ -77,30 +66,30 @@ router.get('/playlists', function (req, res) {
 
     let offset = (page - 1) * 50// in case the user has more than 50 playlist (how cultured)
 
-    fs.readFile('bearer.json', 'utf8', (err, data) => {
-        if (err) {
+    fs.readFile('bearer.json', 'utf8', (err, data) => { // Reads the information from the bearer file
+        if (err) { // Error handling if we cannot read from file for whatever reason
             console.error('Error reading file:', err);
             return;
         }
-        try {
+        try { // here we are parsing the data from the bearer.json file
             let jsonData = JSON.parse(data);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: `https://api.spotify.com/v1/me/playlists?offset=${offset}&limit=50`,
+                url: `https://api.spotify.com/v1/me/playlists?offset=${offset}&limit=50`,// the url for the spotify playlist api
                 headers: {
-                    'Authorization': `Bearer ${jsonData.access_token}`
+                    'Authorization': `Bearer ${jsonData.access_token}` // passing in the access token as a header
                 }
             };
 
             console.log(config)
-            axios.request(config)
+            axios.request(config) // similar to the callback endpoint, we are using axios to post the request async 
                 .then((response) => {
                     console.log(JSON.stringify(response.data));
-                    res.send(response.data)
+                    res.send(response.data) // displaying the JSON response on screen
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.log(error); // error handling 
                 });
         } catch (error) {
             console.error('Error parsing JSON:', error);
@@ -110,14 +99,7 @@ router.get('/playlists', function (req, res) {
 
 });
 
-/**
- * provide a playlist id and receive all of the isrcs within the playlist
- * 
- * @param {playlist_id} = path variable, unique id of the playlist retrieved from the previous function
- * @param {page} = query param, if user has more than 100 songs in a playlist this will allow us to retrieve the whole playlist
- * 
- * @returns array of isrcs :D
- */
+// This is the API that allows us to get the tracks when given a playlist id, its not complete, give it a try
 router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
     var page = req.query.page || 1;
 
@@ -125,12 +107,10 @@ router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
 
     var playlistid = req.params.playlist_id
 
-    let result = await SpotifyService.getTracks(page, offset, playlistid)
+    // Try coding the answer here!
 
-    res.send(result)
-
-
-});
+}
+);
 
 
 
