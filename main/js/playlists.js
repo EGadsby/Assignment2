@@ -1,11 +1,33 @@
+document.addEventListener('DOMContentLoaded', async (e) => {
+    console.log("ayy lmao")
+    try {
+        //await fetch('localhost:8888/spotify/login')
+        displayPlaylistsPage();
+    } catch (err) {
+        throw err;
+    }
+})
 
-fetch('localhost:8888/spotify/login')
-// .then((response) => {
 
-// })
-// .catch((err) => {
-//     throw err;
-// })
+function displayPlaylistsPage() {
+    fetch('http://localhost:8888/spotify/playlists', {
+        method: 'GET'
+    })
+
+        .then((res) => {
+            console.log(res.json().items)
+            for (p in res.items) {
+                let name = p.name;
+                let spotifyID = p.id;
+                let imageUrl = p.images[1];
+                let trackCount = p.tracks.total;
+
+                generatePlaylistHTML(name, spotifyID, imageUrl, trackCount);
+            }
+        }).catch((err) => {
+            throw (err);
+        })
+}
 
 function displayPage() {
     // REST API calls go here.
@@ -13,7 +35,7 @@ function displayPage() {
 
 
     // Use that information to generate the playlist HTML.
-    
+
     // generatePlaylistHTML();
 }
 

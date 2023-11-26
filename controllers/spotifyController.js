@@ -5,7 +5,6 @@ const axios = require('axios')
 const fs = require('fs')
 
 const StringHelper = require('../helpers/stringHelpers')
-const SpotifyService = require('../services/spotifyService')
 
 let client_id = process.env.client_id;
 let client_secret = process.env.client_secret;
@@ -16,6 +15,20 @@ const express = require('express');
 const router = express.Router(); // calling routes on api
 
 // PASTE THE LOGIN FUNCTION HERE
+router.get('/login', function (req, res) {
+
+    var state = StringHelper.generateRandomString(16);
+    var scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
+
+    res.redirect('https://accounts.spotify.com/authorize?' +
+        querystring.stringify({
+            response_type: 'code',
+            client_id: client_id,
+            scope: scope,
+            redirect_uri: redirect_uri,
+            state: state
+        }));
+});
 
 router.get('/callback', function (req, res) {
     // The below code we get directly from the spotify api documentation
@@ -85,7 +98,7 @@ router.get('/playlists', function (req, res) {
             console.log(config)
             axios.request(config) // similar to the callback endpoint, we are using axios to post the request async 
                 .then((response) => {
-                    console.log(JSON.stringify(response.data));
+                    console.log(JSON.stringify(response.data.items));
                     res.send(response.data) // displaying the JSON response on screen
                 })
                 .catch((error) => {
@@ -108,7 +121,39 @@ router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
     var playlistid = req.params.playlist_id
 
     // Try coding the answer here!
+    fs.readFile('bearer.json', 'utf8', async (err, data) => { // Reads the information from the bearer file
+        if (err) { // Error handling if we cannot read from file for whatever reason
+            console.error('Error reading file:', err);
+            return;
+        }
+        try {
+            let jsonData = JSON.parse(data);
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: `https://api.spotify.com/v1/playlists/${playlistid}/tracks?offset=${offset}&limit=100`,
+                headers: {
+                    'Authorization': `Bearer ${jsonData.access_token}`
+                }
+            };
 
+
+            axios.request(config) // similar to the callback endpoint, we are using axios to post the request async 
+                .then((response) => {
+                    const items = response.data.items;
+                    res.send(items.map(item => ({ id: item.track.external_ids.isrc, name: item.track.name })));
+                })
+                .catch((error) => {
+                    console.log(error); // error handling 
+                });
+
+
+
+        } catch (error) {
+            console.error('Error:', error);
+            throw error; // Rethrow the error to handle it where the function is called
+        }
+    })
 }
 );
 
