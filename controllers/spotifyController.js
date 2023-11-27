@@ -112,7 +112,6 @@ router.get('/playlists', function (req, res) {
 
 });
 
-// This is the API that allows us to get the tracks when given a playlist id, its not complete, give it a try
 router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
     var page = req.query.page || 1;
 
@@ -141,26 +140,17 @@ router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
             axios.request(config) // similar to the callback endpoint, we are using axios to post the request async 
                 .then((response) => {
                     const items = response.data.items;
-                    console.log(items.map(item => ({
-                        id: item.track.external_ids.isrc,
-                        name: item.track.name,
-                        artists: item.track.artists,
-                        images: item.track.album.images,
-                        durationMs: item.track.duration_ms
-                    })))
                     res.send(items.map(item => ({
                         id: item.track.external_ids.isrc,
                         name: item.track.name,
                         artists: item.track.artists,
                         images: item.track.album.images,
                         durationMs: item.track.duration_ms
-                    })));
+                     })));
                 })
                 .catch((error) => {
                     console.log(error); // error handling 
                 });
-
-
 
         } catch (error) {
             console.error('Error:', error);

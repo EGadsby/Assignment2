@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async (e) => {
-    console.log("ayy lmao")
     try {
-        //await fetch('localhost:8888/spotify/login')
+        // await fetch('http://localhost:8888/spotify/login');
         displayPlaylistsPage();
     } catch (err) {
         throw err;
@@ -35,18 +34,6 @@ function displayPlaylistsPage() {
         console.error('Fetch error:', err);
     });
 }
-
-function displayPage() {
-    // REST API calls go here.
-
-
-
-    // Use that information to generate the playlist HTML.
-
-    // generatePlaylistHTML();
-}
-
-
 
 
 function generatePlaylistHTML(name = string, spotifyId = string, imageUrl = string, trackCount = int) {

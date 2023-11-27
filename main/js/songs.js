@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
 })
 
 function displaySongsPage(spotifyId) {
-    console.log(spotifyId)
     fetch(`http://localhost:8888/spotify/playlists/${spotifyId}/tracks`, {
         method: 'GET'
     }).then((res) => {
@@ -19,15 +18,12 @@ function displaySongsPage(spotifyId) {
         }
         return res.json();
     }).then((res) => {
-        console.log(res)
         for (s of res) {
-            console.log(s)
             let name = s.name;
             let artists = s.artists;
             let durationMs = s.durationMs;
             let imgUrls = s.images;
-
-
+            
             generateSongsHTML(name, artists, durationMs, imgUrls);
         }
     })
@@ -41,7 +37,6 @@ function generateSongsHTML(name = "", artists = [], durationMs = 0, imgUrls) {
     song.classList.add('song');
 
     const img = document.createElement('img');
-    console.log(imgUrls)
     img.setAttribute('src', imgUrls[0].url);
 
     const songInfo = document.createElement('div');
@@ -70,7 +65,7 @@ function generateSongsHTML(name = "", artists = [], durationMs = 0, imgUrls) {
     let minutes = Math.floor(totalSeconds / 60);
     let remainingSeconds = Math.floor(totalSeconds % 60);
 
-    duration.textContent = `${minutes}:${remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds}`
+    duration.textContent = `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
 
     songInfo.appendChild(songTitle);
     songInfo.appendChild(artist);
