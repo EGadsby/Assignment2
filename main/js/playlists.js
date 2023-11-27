@@ -67,7 +67,6 @@ function generatePlaylistHTML(name, spotifyId, images, trackCount) {
     playlist.dataset.spotifyId = spotifyId;
 
     playlist.addEventListener('click', (e) => {
-        console.log("This shit was pressed");
         sessionStorage.playlistSpotifyId = spotifyId;
         location.href = "songs.html"; // Songs page.
     });
