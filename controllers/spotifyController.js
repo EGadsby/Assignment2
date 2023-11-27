@@ -30,6 +30,51 @@ router.get('/login', function (req, res) {
         }));
 });
 
+router.get('/auth', function (req, res) {
+    fs.readFile('bearer.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            return;
+        }
+        try {
+            let jsonData = JSON.parse(data);
+            res.send(jsonData);
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+    })
+});
+
+router.get('/me', function (req, res) {
+    fs.readFile('bearer.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            return;
+        }
+        try {
+            let jsonData = JSON.parse(data);
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: `https://api.spotify.com/v1/me`,// the url for the spotify playlist api
+                headers: {
+                    'Authorization': `Bearer ${jsonData.access_token}` // passing in the access token as a header
+                }
+            };
+
+            axios.request(config) // similar to the callback endpoint, we are using axios to post the request async 
+                .then((response) => {
+                    res.send(response)
+                })
+                .catch((error) => {
+                    console.log(error); // error handling 
+                });
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
+    })
+});
+
 router.get('/callback', function (req, res) {
     // The below code we get directly from the spotify api documentation
     var code = req.query.code || null;
@@ -146,7 +191,7 @@ router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
                         artists: item.track.artists,
                         images: item.track.album.images,
                         durationMs: item.track.duration_ms
-                     })));
+                    })));
                 })
                 .catch((error) => {
                     console.log(error); // error handling 
@@ -159,10 +204,5 @@ router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
     })
 }
 );
-
-
-
-
-
 
 module.exports = router; 
