@@ -1,5 +1,3 @@
-import { getCookie } from 'cookies';
-
 document.addEventListener('DOMContentLoaded', (e) => {
     if (!getCookie('spotify_access_token'))
         location.href = "playlists.html";
@@ -15,8 +13,8 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
 function displaySongsPage(spotifyId) {
     // Hint: You will need to insert the spotifyId into the route.
-    const route = ``;
-    const method = '';
+    const route = `http://localhost:8888/spotify/playlists/${spotifyId}/tracks`;
+    const method = 'GET';
 
     fetch(route, {
         method: method
@@ -27,11 +25,14 @@ function displaySongsPage(spotifyId) {
         return res.json();
     }).then((res) => {
         // PARSE JSON AND GENERATE HTML HERE.
+        for (s of res) {
+            let name = s.name;
+            let artists = s.artists;
+            let images = s.images;
+            let durationMs = s.durationMs;
 
-
-
-        // Hint: You may need to iterate while calling this function.
-        // generateSongsHTML(name, artists, durationMs, imgUrls);
+            generateSongsHTML(name, artists, durationMs, images);
+        }
     })
 }
 
@@ -85,4 +86,15 @@ function generateSongsHTML(name = "", artists = [], durationMs = 0, imgUrls) {
     song.appendChild(songInfo);
     song.appendChild(duration);
     songsPanel.appendChild(song);
+}
+
+function getCookie(name) {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
 }
