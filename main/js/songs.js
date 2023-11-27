@@ -1,3 +1,5 @@
+import { getCookie } from 'cookies';
+
 document.addEventListener('DOMContentLoaded', (e) => {
     if (!getCookie('spotify_access_token'))
         location.href = "playlists.html";
@@ -12,36 +14,34 @@ document.addEventListener('DOMContentLoaded', (e) => {
 })
 
 function displaySongsPage(spotifyId) {
-    fetch(`http://localhost:8888/spotify/playlists/${spotifyId}/tracks`, {
-        method: 'GET'
+    // Hint: You will need to insert the spotifyId into the route.
+    const route = ``;
+    const method = '';
+
+    fetch(route, {
+        method: method
     }).then((res) => {
         if (!res.ok) {
             throw new Error('HTTP Error! Status: ' + res.status);
         }
         return res.json();
     }).then((res) => {
-        for (s of res) {
-            let name = s.name;
-            let artists = s.artists;
-            let durationMs = s.durationMs;
-            let imgUrls = s.images;
+        // PARSE JSON AND GENERATE HTML HERE.
 
-            generateSongsHTML(name, artists, durationMs, imgUrls);
-        }
+
+
+        // Hint: You may need to iterate while calling this function.
+        // generateSongsHTML(name, artists, durationMs, imgUrls);
     })
 }
 
-function getCookie(name) {
-    const nameEQ = `${name}=`;
-    const ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-}
-
+/**
+ * Generates HTML for songs.
+ * @param {string} name - Name of the song.
+ * @param {array} artists - Contributing Artistis on the song.
+ * @param {int} durationMs - Duration of the song in milliseconds.
+ * @param {array} imgUrls - Object containing the image information of the album the song belongs to.
+ */
 function generateSongsHTML(name = "", artists = [], durationMs = 0, imgUrls) {
     const songsPanel = document.getElementById('songs-panel');
 

@@ -1,3 +1,5 @@
+import { createCookie } from 'cookies';
+
 document.addEventListener('DOMContentLoaded', async (e) => {
     fetch('http://localhost:8888/spotify/auth', {
         method: 'GET'
@@ -29,48 +31,37 @@ document.addEventListener('DOMContentLoaded', async (e) => {
     }
 })
 
-function createCookie(name, value, days) {
-    let expires = '';
-    if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = `; expires=${date.toGMTString()}`;
-    }
-    const cookieToCreate = `${name}=${value}${expires}; path=/;`;
-    document.cookie = cookieToCreate;
-    // console.log("Cookie being created: ", cookieToCreate); // Uncomment for debugging
-}
-
 function displayPlaylistsPage() {
-    fetch('http://localhost:8888/spotify/playlists', {
-        method: 'GET'
+    // Fill these in.
+    const route = '';
+    const method = '';
+
+    fetch(route, {
+        method: method
     }).then(res => {
         if (!res.ok) {
             throw new Error(`HTTP error! Status: ${res.status}`);
         }
         return res.json(); // Parse the response as JSON
     }).then(data => {
-        // Now 'data' is the parsed JSON object
-        if (data.items) {
-            console.log(data.items.length)
-            for (let p of data.items) { // Use 'of' instead of 'in' for iterating over arrays
-                let name = p.name;
-                let spotifyID = p.id;
-                let imageUrl = p.images[0].url; // Assuming 'images' is an array and has a 'url' property
-                let trackCount = p.tracks.total;
+        // FILL IN CODE HERE TO PARSE JSON AND GENERATE HTML
 
-                generatePlaylistHTML(name, spotifyID, imageUrl, trackCount);
-            }
-        } else {
-            console.log('No items found in response');
-        }
+
+        // Hint: You may need to iterate while calling this function.D
+        // generatePlaylistHTML(name, spotifyId, imageUrl, trackCount);
     }).catch(err => {
         console.error('Fetch error:', err);
     });
 }
 
-
-function generatePlaylistHTML(name = "", spotifyId = "", imageUrl = "", trackCount = 0) {
+/**
+ * Generates HTML of playlists.
+ * @param {string} name - The name of the playlist.
+ * @param {string} spotifyId - the id of the playlist in Spotify.
+ * @param {*} images - The image information of the playlist.
+ * @param {int} trackCount - the amount of tracks/songs on the playlist.
+ */
+function generatePlaylistHTML(name, spotifyId, images, trackCount) {
     const playlistsPanel = document.getElementById('playlists-panel');
 
     const playlist = document.createElement('div');
@@ -87,7 +78,7 @@ function generatePlaylistHTML(name = "", spotifyId = "", imageUrl = "", trackCou
     playlistInfo.classList.add('playlist-info');
 
     const img = document.createElement('img');
-    img.setAttribute('src', imageUrl);
+    img.setAttribute('src', images[0].url);
 
     const nameHeader = document.createElement('h2');
     nameHeader.classList.add('playlist-name');
