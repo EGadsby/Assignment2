@@ -18,7 +18,9 @@ const app = express.Router(); // calling routes on api
 // PASTE THE LOGIN FUNCTION HERE
 
 
-// Callback function we've provided to Spotify
+
+
+// Callback enpoint we've provided to Spotify
 app.get('/callback', function (req, res) {
     // The below code we get directly from the spotify api documentation
     var code = req.query.code || null;
@@ -107,13 +109,13 @@ app.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
 
     var playlistid = req.params.playlist_id
 
-    // Try coding the answer here!
+    // Code the answer here!
     
 
 
 });
 
-// DO NOT GO BEYOND THIS POINT
+// NO NEED TO GO BEYOND THIS POINT
 
 app.get('/auth', function (req, res) {
     fs.readFile('bearer.json', 'utf8', (err, data) => {
