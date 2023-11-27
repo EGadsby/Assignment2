@@ -1,5 +1,3 @@
-import { getCookie } from 'cookies';
-
 document.addEventListener('DOMContentLoaded', (e) => {
     if (!getCookie('spotify_access_token'))
         location.href = "playlists.html";
@@ -31,7 +29,7 @@ function displaySongsPage(spotifyId) {
 
 
         // Hint: You may need to iterate while calling this function.
-        // generateSongsHTML(name, artists, durationMs, imgUrls);
+        // generateSongsHTML(name, artists, durationMs, images);
     })
 }
 
@@ -40,16 +38,16 @@ function displaySongsPage(spotifyId) {
  * @param {string} name - Name of the song.
  * @param {array} artists - Contributing Artistis on the song.
  * @param {int} durationMs - Duration of the song in milliseconds.
- * @param {array} imgUrls - Object containing the image information of the album the song belongs to.
+ * @param {array} images - Object containing the image information of the album the song belongs to.
  */
-function generateSongsHTML(name = "", artists = [], durationMs = 0, imgUrls) {
+function generateSongsHTML(name = "", artists = [], durationMs = 0, images) {
     const songsPanel = document.getElementById('songs-panel');
 
     const song = document.createElement('div');
     song.classList.add('song');
 
     const img = document.createElement('img');
-    img.setAttribute('src', imgUrls[0].url);
+    img.setAttribute('src', images[0].url);
 
     const songInfo = document.createElement('div');
     songInfo.classList.add('song-info');
@@ -85,4 +83,15 @@ function generateSongsHTML(name = "", artists = [], durationMs = 0, imgUrls) {
     song.appendChild(songInfo);
     song.appendChild(duration);
     songsPanel.appendChild(song);
+}
+
+function getCookie(name) {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
 }

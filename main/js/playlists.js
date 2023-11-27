@@ -1,5 +1,3 @@
-import { createCookie } from 'cookies';
-
 document.addEventListener('DOMContentLoaded', async (e) => {
     fetch('http://localhost:8888/spotify/auth', {
         method: 'GET'
@@ -48,7 +46,7 @@ function displayPlaylistsPage() {
 
 
         // Hint: You may need to iterate while calling this function.D
-        // generatePlaylistHTML(name, spotifyId, imageUrl, trackCount);
+        // generatePlaylistHTML(name, spotifyId, images, trackCount);
     }).catch(err => {
         console.error('Fetch error:', err);
     });
@@ -93,4 +91,16 @@ function generatePlaylistHTML(name, spotifyId, images, trackCount) {
     playlist.appendChild(img);
     playlist.appendChild(playlistInfo);
     playlistsPanel.appendChild(playlist);
+}
+
+function createCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = `; expires=${date.toGMTString()}`;
+    }
+    const cookieToCreate = `${name}=${value}${expires}; path=/;`;
+    document.cookie = cookieToCreate;
+    // console.log("Cookie being created: ", cookieToCreate); // Uncomment for debugging
 }
