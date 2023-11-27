@@ -1,48 +1,65 @@
 document.addEventListener('DOMContentLoaded', async (e) => {
-    console.log("ayy lmao")
+    fetch('http://localhost:8888/spotify/auth', {
+        method: 'GET'
+    }).then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json(); // Parse the response as JSON
+    }).then(data => {
+        createCookie('spotify_access_token', data.access_token, 30);
+        console.log("Cookie created!");
+    }).catch(err => {
+        console.error('Fetch error:', err);
+    });
+
+    fetch('http://localhost:8888/spotify/me', {
+        method: 'GET'
+    }).then(res => {
+        if (!res.ok)
+            location.href = "http://localhost:8888/spotify/login"; // Login page.
+    }).catch(err => {
+        console.error('Fetch error:', err);
+    });
+
     try {
-        //await fetch('localhost:8888/spotify/login')
         displayPlaylistsPage();
     } catch (err) {
         throw err;
     }
 })
 
-
 function displayPlaylistsPage() {
-    fetch('http://localhost:8888/spotify/playlists', {
-        method: 'GET'
-    })
+    // Fill these in.
+    const route = '';
+    const method = '';
 
-        .then((res) => {
-            console.log(res.json().items)
-            for (p in res.items) {
-                let name = p.name;
-                let spotifyID = p.id;
-                let imageUrl = p.images[1];
-                let trackCount = p.tracks.total;
+    fetch(route, {
+        method: method
+    }).then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json(); // Parse the response as JSON
+    }).then(data => {
+        // FILL IN CODE HERE TO PARSE JSON AND GENERATE HTML
 
-                generatePlaylistHTML(name, spotifyID, imageUrl, trackCount);
-            }
-        }).catch((err) => {
-            throw (err);
-        })
+
+        // Hint: You may need to iterate while calling this function.D
+        // generatePlaylistHTML(name, spotifyId, images, trackCount);
+    }).catch(err => {
+        console.error('Fetch error:', err);
+    });
 }
 
-function displayPage() {
-    // REST API calls go here.
-
-
-
-    // Use that information to generate the playlist HTML.
-
-    // generatePlaylistHTML();
-}
-
-
-
-
-function generatePlaylistHTML(name = string, spotifyId = string, imageUrl = string, trackCount = int) {
+/**
+ * Generates HTML of playlists.
+ * @param {string} name - The name of the playlist.
+ * @param {string} spotifyId - the id of the playlist in Spotify.
+ * @param {*} images - The image information of the playlist.
+ * @param {int} trackCount - the amount of tracks/songs on the playlist.
+ */
+function generatePlaylistHTML(name, spotifyId, images, trackCount) {
     const playlistsPanel = document.getElementById('playlists-panel');
 
     const playlist = document.createElement('div');
@@ -50,16 +67,15 @@ function generatePlaylistHTML(name = string, spotifyId = string, imageUrl = stri
     playlist.dataset.spotifyId = spotifyId;
 
     playlist.addEventListener('click', (e) => {
-        console.log("This shit was pressed");
         sessionStorage.playlistSpotifyId = spotifyId;
-        location.href = "../HTML/songs.html"; // Songs page.
+        location.href = "songs.html"; // Songs page.
     });
 
     const playlistInfo = document.createElement('div');
     playlistInfo.classList.add('playlist-info');
 
     const img = document.createElement('img');
-    img.setAttribute('src', imageUrl);
+    img.setAttribute('src', images[0].url);
 
     const nameHeader = document.createElement('h2');
     nameHeader.classList.add('playlist-name');
@@ -74,4 +90,16 @@ function generatePlaylistHTML(name = string, spotifyId = string, imageUrl = stri
     playlist.appendChild(img);
     playlist.appendChild(playlistInfo);
     playlistsPanel.appendChild(playlist);
+}
+
+function createCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = `; expires=${date.toGMTString()}`;
+    }
+    const cookieToCreate = `${name}=${value}${expires}; path=/;`;
+    document.cookie = cookieToCreate;
+    // console.log("Cookie being created: ", cookieToCreate); // Uncomment for debugging
 }

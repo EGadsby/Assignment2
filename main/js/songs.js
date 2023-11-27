@@ -1,12 +1,53 @@
+document.addEventListener('DOMContentLoaded', (e) => {
+    if (!getCookie('spotify_access_token'))
+        location.href = "playlists.html";
 
-function generateSongsHTML(name = string, artists = [], durationMs = int, imgUrl = string) {
+    const playlistId = sessionStorage.playlistSpotifyId;
+
+    try {
+        displaySongsPage(playlistId);
+    } catch (err) {
+        throw err;
+    }
+})
+
+function displaySongsPage(spotifyId) {
+    // Hint: You will need to insert the spotifyId into the route.
+    const route = ``;
+    const method = '';
+
+    fetch(route, {
+        method: method
+    }).then((res) => {
+        if (!res.ok) {
+            throw new Error('HTTP Error! Status: ' + res.status);
+        }
+        return res.json();
+    }).then((res) => {
+        // PARSE JSON AND GENERATE HTML HERE.
+
+
+
+        // Hint: You may need to iterate while calling this function.
+        // generateSongsHTML(name, artists, durationMs, images);
+    })
+}
+
+/**
+ * Generates HTML for songs.
+ * @param {string} name - Name of the song.
+ * @param {array} artists - Contributing Artistis on the song.
+ * @param {int} durationMs - Duration of the song in milliseconds.
+ * @param {array} images - Object containing the image information of the album the song belongs to.
+ */
+function generateSongsHTML(name = "", artists = [], durationMs = 0, images) {
     const songsPanel = document.getElementById('songs-panel');
 
     const song = document.createElement('div');
     song.classList.add('song');
 
     const img = document.createElement('img');
-    img.setAttribute('src', imgUrl);
+    img.setAttribute('src', images[0].url);
 
     const songInfo = document.createElement('div');
     songInfo.classList.add('song-info');
@@ -17,12 +58,12 @@ function generateSongsHTML(name = string, artists = [], durationMs = int, imgUrl
 
     const artist = document.createElement('span');
     artist.classList.add('artist');
-    let str = artists[0];
+    let str = artists[0].name;
     for (let i = 1; i < artists.length; i++) {
         if ((i + 1) >= artists.length) {
-            str += " & " + artists[i];
+            str += " & " + artists[i].name;
         } else {
-            str += ", " + artists[i];
+            str += ", " + artists[i].name;
         }
     }
     artist.textContent = str;
@@ -34,7 +75,7 @@ function generateSongsHTML(name = string, artists = [], durationMs = int, imgUrl
     let minutes = Math.floor(totalSeconds / 60);
     let remainingSeconds = Math.floor(totalSeconds % 60);
 
-    duration.textContent = `${minutes}:${remainingSeconds}`;
+    duration.textContent = `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
 
     songInfo.appendChild(songTitle);
     songInfo.appendChild(artist);
@@ -44,5 +85,13 @@ function generateSongsHTML(name = string, artists = [], durationMs = int, imgUrl
     songsPanel.appendChild(song);
 }
 
-let imgUrl = "https://images.immediate.co.uk/production/volatile/sites/3/2018/08/Simpsons_SO28_Gallery_11-fb0b632.jpg?quality=90&resize=800,534";
-generateSongsHTML("Sussy Homer", ["Sir Mixalot, Lebron James, Pookie Bear"], 90000, imgUrl);
+function getCookie(name) {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
