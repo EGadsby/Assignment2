@@ -12,21 +12,28 @@ document.addEventListener('DOMContentLoaded', async (e) => {
 function displayPlaylistsPage() {
     fetch('http://localhost:8888/spotify/playlists', {
         method: 'GET'
-    })
-
-        .then((res) => {
-            console.log(res.json().items)
-            for (p in res.items) {
+    }).then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json(); // Parse the response as JSON
+    }).then(data => {
+        // Now 'data' is the parsed JSON object
+        if (data.items) {
+            for (let p of data.items) { // Use 'of' instead of 'in' for iterating over arrays
                 let name = p.name;
                 let spotifyID = p.id;
-                let imageUrl = p.images[1];
+                let imageUrl = p.images[1].url; // Assuming 'images' is an array and has a 'url' property
                 let trackCount = p.tracks.total;
 
                 generatePlaylistHTML(name, spotifyID, imageUrl, trackCount);
             }
-        }).catch((err) => {
-            throw (err);
-        })
+        } else {
+            console.log('No items found in response');
+        }
+    }).catch(err => {
+        console.error('Fetch error:', err);
+    });
 }
 
 function displayPage() {

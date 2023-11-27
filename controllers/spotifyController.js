@@ -141,7 +141,20 @@ router.get(`/playlists/:playlist_id/tracks`, async function (req, res) {
             axios.request(config) // similar to the callback endpoint, we are using axios to post the request async 
                 .then((response) => {
                     const items = response.data.items;
-                    res.send(items.map(item => ({ id: item.track.external_ids.isrc, name: item.track.name })));
+                    console.log(items.map(item => ({
+                        id: item.track.external_ids.isrc,
+                        name: item.track.name,
+                        artists: item.track.artists,
+                        images: item.track.album.images,
+                        durationMs: item.track.duration_ms
+                    })))
+                    res.send(items.map(item => ({
+                        id: item.track.external_ids.isrc,
+                        name: item.track.name,
+                        artists: item.track.artists,
+                        images: item.track.album.images,
+                        durationMs: item.track.duration_ms
+                    })));
                 })
                 .catch((error) => {
                     console.log(error); // error handling 
