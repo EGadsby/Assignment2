@@ -4,8 +4,7 @@ let querystring = require('querystring')
 const axios = require('axios')
 const fs = require('fs')
 
-
-import { generateRandomString } from '../helpers/stringHelpers';
+const stringHelper = require('../helpers/stringHelpers');
 
 let client_id = process.env.client_id;
 let client_secret = process.env.client_secret;
